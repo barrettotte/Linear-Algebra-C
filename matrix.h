@@ -11,8 +11,13 @@ typedef struct{
     double* data;
 } matrix;
 
+
+// Return new matrix from double array d with size ixj
+matrix* newMatrix(const double* d, const int i, const int j);
+
+
 // Return new matrix as a zero matrix of size ixj
-matrix* newMatrix(const int i, const int j);  
+matrix* zeroMatrix(const int i, const int j);  
 
 
 // Release matrix m from memory
@@ -20,15 +25,15 @@ void deleteMatrix(matrix* m);
 
 
 // Return new matrix as a copy of matrix m
-matrix* copyMatrix(matrix* m);
+matrix* copyMatrix(const matrix* m);
 
 
 // Set element of matrix m[i,j] to scalar s
-void setElement(matrix* m, int i, int j, double s);
+void setElement(const matrix* m, const int i, const int j, const double s);
 
 
 // Return scalar as element m[i,j]
-double* getElement(matrix* m, int i, int j);
+double getElement(const matrix* m, const int i, const int j);
 
 
 // Set row j of matrix m to vector v
