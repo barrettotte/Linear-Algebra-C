@@ -1,10 +1,3 @@
-#ifndef MYBOOL_H
-  #define MYBOOL_H
-  #define false 0
-  #define true 1
-  typedef int bool;
-#endif
-
 typedef struct{
     int width;
     int height;
@@ -12,12 +5,12 @@ typedef struct{
 } matrix;
 
 
-// Return new matrix from double array d with size ixj
-matrix* newMatrix(const double* d, const int i, const int j);
+// Return new matrix from double array d with size wxh
+matrix* newMatrix(const double* d, const int w, const int h);
 
 
-// Return new matrix as a zero matrix of size ixj
-matrix* zeroMatrix(const int i, const int j);  
+// Return new matrix as a zero matrix of size wxh
+matrix* zeroMatrix(const int w, const int h);  
 
 
 // Release matrix m from memory
@@ -36,28 +29,20 @@ void setElement(const matrix* m, const int i, const int j, const double s);
 double getElement(const matrix* m, const int i, const int j);
 
 
-// Set row j of matrix m to vector v
-void setRow(matrix* m, int j, matrix* v);
+// Set row vector j of matrix m to vector v
+void setRowVector(const matrix* m, const int j, const matrix* v);
 
 
-// Return new matrix as row j of matrix m as row vector
-matrix* getRow(matrix* m, int j);
+// Return new matrix as row vector j of matrix m as row vector
+matrix* getRowVector(const matrix* m, const int j);
 
 
-// Set col i of matrix m to vector v
-void setCol(matrix* m, int i, matrix* v);
+// Set col vector col i of matrix m to vector v
+void setColVector(const matrix* m, const int i, const matrix* v);
 
 
-// Return new matrix as row i of matrix m as column vector
-matrix* getCol(matrix* m, int i);
-
-
-// Get height of matrix m
-int rowCount(const matrix* m);
-
-
-// Get width of matrix m
-int colCount(const matrix* m);
+// Return new matrix as col vector i of matrix m as column vector
+matrix* getColVector(const matrix* m, const int i);
 
 
 // "Pretty" print matrix m
@@ -65,51 +50,51 @@ void printMatrix(const matrix* m);
 
 
 // Matrices m1 and m2 are equal if same dimension and identical elements
-bool isEqual(matrix* m1, matrix* m2);
+int isEqual(matrix* m1, matrix* m2);
 
 
 // Matrix m is a zero matrix if all elements are 0
-bool isZeroMatrix(matrix* m);
+int isZeroMatrix(matrix* m);
 
 
 // Matrix m is an identity matrix if it is a square matrix with only 1's along main diagonal
-bool isIdentityMatrix(matrix* m);
+int isIdentityMatrix(matrix* m);
 
 
 // Matrix m is a square matrix if number of cols = number of rows
-bool isSquareMatrix(matrix* m);
+int isSquareMatrix(matrix* m);
 
 
 // Matrix m is invertible if it is a square matrix and det(m) != 0
-bool isInvertible(matrix* m);
+int isInvertible(matrix* m);
 
 
 // Matrix m is a diagonal matrix if m is a square matrix and all elements along diagonal are zero
-bool isDiagonalMatrix(matrix* m);
+int isDiagonalMatrix(matrix* m);
 
 
 // Matrix m is an upper triangular matrix if m is a square matrix and all elements below diagonal are zero
-bool isUpTriMatrix(matrix* m);
+int isUpTriMatrix(matrix* m);
 
 
 // Matrix m is a lower triangular matrix if m is a square matrix and all elements above diagonal are zero
-bool isLoTriMatrix(matrix* m);
+int isLoTriMatrix(matrix* m);
 
 
 // Matrix m is a symmetric matrix if m = transpose(m)
-bool isSymmetric(matrix* m);
+int isSymmetric(matrix* m);
 
 
 // Matrix m has a zero row if any row is made entirely of zeroes
-bool hasZeroRow(matrix *m);
+int hasZeroRow(matrix *m);
 
 
 // Matrix m has a zero col if any col is made entirely of zeroes
-bool hasZeroCol(matrix *m);
+int hasZeroCol(matrix *m);
 
 
 // Matrix m is a scalar multiple of matrix m2 if m1 % m2 == 0
-bool isScalarMultiple(matrix *m1 , matrix* m2);
+int isScalarMultiple(matrix *m1 , matrix* m2);
 
 
 // Return scalar as determinant of matrix m
@@ -177,16 +162,16 @@ double distance(matrix* v1, matrix* v2);
 
 
 // Matrix m is considered a vector if it colCount(m) == 0 or rowCount(m) == 0
-bool isVector(matrix* m);
+int isVector(matrix* m);
 
 
 // Vector v is a unit vector if the norm(v) = 1
-bool isUnitVector(matrix* v);
+int isUnitVector(matrix* v);
 
 
 // Vector m1 is orthogonal (perpendicular) to vector m2 if dotProduct(v1, v2) == 0
 // Matrix m1 is orthogonal to matrix m2 if inv(m) == transpose(m)
-bool isOrthogonal(matrix* m1, matrix* m2);
+int isOrthogonal(matrix* m1, matrix* m2);
 
 
 // Return scalar as the area of a parallelogram defined by vectors v1 and v2 [Page 166]
@@ -292,6 +277,17 @@ matrix* shear2X(matrix *m, double k);
 matrix* shear2Y(matrix *m, double k);
 
 
+// eigenvalues?
+
+
 // Return new matrix as eigenvector of matrix m given eigenvalue ev
 matrix* eigenvector(matrix* m, double ev); 
+
+
+// Return new matrix as matrix m in row echelon form
+matrix* rowEchelon(matrix* m);
+
+
+// Return new matrix as matrix m in reduced row echelon form
+matrix* reducedRowEchelon(matrix* m);
 
