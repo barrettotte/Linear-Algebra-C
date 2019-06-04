@@ -33,15 +33,15 @@ double getElement(const matrix* m, const int i, const int j);
 void setRowVector(const matrix* m, const int j, const matrix* v);
 
 
-// Return new matrix as row vector j of matrix m as row vector
+// Return new matrix as row vector j of matrix m
 matrix* getRowVector(const matrix* m, const int j);
 
 
-// Set col vector col i of matrix m to vector v
+// Set col vector i of matrix m to vector v
 void setColVector(const matrix* m, const int i, const matrix* v);
 
 
-// Return new matrix as col vector i of matrix m as column vector
+// Return new matrix as col vector i of matrix m
 matrix* getColVector(const matrix* m, const int i);
 
 
