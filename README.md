@@ -1,6 +1,8 @@
 # Linear-Algebra-C
 
 A linear algebra library for performing basic and advanced matrix operations. 
+Targeted for **C99**.
+
 This was made as a refresher for linear algebra.
 
 

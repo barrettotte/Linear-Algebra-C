@@ -1,8 +1,14 @@
+#include <stdbool.h>
+
 typedef struct{
     int width;
     int height;
     double* data;
 } matrix;
+
+
+// Helper function for asserting matrix and matrix data
+void assertMatrix(const matrix* m);
 
 
 // Return new matrix from double array d with size wxh
@@ -45,56 +51,64 @@ void setColVector(const matrix* m, const int i, const matrix* v);
 matrix* getColVector(const matrix* m, const int i);
 
 
+// Return new matrix as main diagonal of matrix m (square matrices only)
+matrix* getMainDiagonal(const matrix* m);
+
+
+// Set main diagonal of matrix m to vector v
+void setMainDiagonal(const matrix* m, const matrix* v);
+
+
 // "Pretty" print matrix m
-void printMatrix(const matrix* m);
+void printMatrix(const matrix* m, const bool includeIndices);
 
 
 // Matrices m1 and m2 are equal if same dimension and identical elements
-int isEqual(matrix* m1, matrix* m2);
+bool isEqual(const matrix* m1, const matrix* m2);
 
 
 // Matrix m is a zero matrix if all elements are 0
-int isZeroMatrix(matrix* m);
+bool isZeroMatrix(const matrix* m);
 
 
 // Matrix m is an identity matrix if it is a square matrix with only 1's along main diagonal
-int isIdentityMatrix(matrix* m);
+bool isIdentityMatrix(const matrix* m);
 
 
 // Matrix m is a square matrix if number of cols = number of rows
-int isSquareMatrix(matrix* m);
+bool isSquareMatrix(const matrix* m);
 
 
 // Matrix m is invertible if it is a square matrix and det(m) != 0
-int isInvertible(matrix* m);
+bool isInvertible(matrix* m);
 
 
 // Matrix m is a diagonal matrix if m is a square matrix and all elements along diagonal are zero
-int isDiagonalMatrix(matrix* m);
+bool isDiagonalMatrix(matrix* m);
 
 
 // Matrix m is an upper triangular matrix if m is a square matrix and all elements below diagonal are zero
-int isUpTriMatrix(matrix* m);
+bool isUpTriMatrix(matrix* m);
 
 
 // Matrix m is a lower triangular matrix if m is a square matrix and all elements above diagonal are zero
-int isLoTriMatrix(matrix* m);
+bool isLoTriMatrix(matrix* m);
 
 
 // Matrix m is a symmetric matrix if m = transpose(m)
-int isSymmetric(matrix* m);
+bool isSymmetric(matrix* m);
 
 
 // Matrix m has a zero row if any row is made entirely of zeroes
-int hasZeroRow(matrix *m);
+bool hasZeroRow(matrix *m);
 
 
 // Matrix m has a zero col if any col is made entirely of zeroes
-int hasZeroCol(matrix *m);
+bool hasZeroCol(matrix *m);
 
 
 // Matrix m is a scalar multiple of matrix m2 if m1 % m2 == 0
-int isScalarMultiple(matrix *m1 , matrix* m2);
+bool isScalarMultiple(matrix *m1 , matrix* m2);
 
 
 // Return scalar as determinant of matrix m
@@ -162,16 +176,16 @@ double distance(matrix* v1, matrix* v2);
 
 
 // Matrix m is considered a vector if it colCount(m) == 0 or rowCount(m) == 0
-int isVector(matrix* m);
+bool isVector(matrix* m);
 
 
 // Vector v is a unit vector if the norm(v) = 1
-int isUnitVector(matrix* v);
+bool isUnitVector(matrix* v);
 
 
 // Vector m1 is orthogonal (perpendicular) to vector m2 if dotProduct(v1, v2) == 0
 // Matrix m1 is orthogonal to matrix m2 if inv(m) == transpose(m)
-int isOrthogonal(matrix* m1, matrix* m2);
+bool isOrthogonal(matrix* m1, matrix* m2);
 
 
 // Return scalar as the area of a parallelogram defined by vectors v1 and v2 [Page 166]
