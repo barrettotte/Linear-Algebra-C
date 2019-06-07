@@ -1,8 +1,8 @@
 #include <stdbool.h>
 
 typedef struct{
-    int width;
-    int height;
+    int rows; 
+    int cols;
     double* data;
 } matrix;
 
@@ -11,12 +11,12 @@ typedef struct{
 void assertMatrix(const matrix* m);
 
 
-// Return new matrix from double array d with size wxh
-matrix* newMatrix(const double* d, const int w, const int h);
+// Return new matrix from double array d with size rows x cols
+matrix* newMatrix(const double* d, const int rows, const int cols);
 
 
-// Return new matrix as a zero matrix of size wxh
-matrix* zeroMatrix(const int w, const int h);  
+// Return new matrix as a zero matrix of size rows x cols
+matrix* zeroMatrix(const int rows, const int cols);
 
 
 // Release matrix m from memory
@@ -35,28 +35,36 @@ void setElement(const matrix* m, const int i, const int j, const double s);
 double getElement(const matrix* m, const int i, const int j);
 
 
-// Set row vector j of matrix m to vector v
-void setRowVector(const matrix* m, const int j, const matrix* v);
+// Set row vector i of matrix m to vector v
+void setRowVector(const matrix* m, const int i, const matrix* v);
 
 
-// Return new matrix as row vector j of matrix m
-matrix* getRowVector(const matrix* m, const int j);
+// Return new matrix as row vector i of matrix m
+matrix* getRowVector(const matrix* m, const int i);
 
 
-// Set col vector i of matrix m to vector v
-void setColVector(const matrix* m, const int i, const matrix* v);
+// Set col vector j of matrix m to vector v
+void setColVector(const matrix* m, const int j, const matrix* v);
 
 
-// Return new matrix as col vector i of matrix m
-matrix* getColVector(const matrix* m, const int i);
+// Return new matrix as col vector j of matrix m
+matrix* getColVector(const matrix* m, const int j);
 
 
 // Return new matrix as main diagonal of matrix m (square matrices only)
 matrix* getMainDiagonal(const matrix* m);
 
 
-// Set main diagonal of matrix m to vector v
+// Set main diagonal of matrix m to row vector v
 void setMainDiagonal(const matrix* m, const matrix* v);
+
+
+// Return new matrix as anti diagonal of matrix m (square matrices only)
+matrix* getAntiDiagonal(const matrix* m);
+
+
+// Set anti diagonal of matrix m to row vector v
+void setAntiDiagonal(const matrix* m, const matrix* v);
 
 
 // "Pretty" print matrix m

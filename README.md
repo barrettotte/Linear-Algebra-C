@@ -9,7 +9,16 @@ This was made as a refresher for linear algebra.
 I did a basic refresher with Elementary Linear Algebra 10th Ed, the book I used in a previous course.
 
 
-## Note
+## Matrix
+To index a matrix, I use row-major indexing with zero indexing
+```
+[1, 2, 3]     [(0,0) (0,1) (0,2)]
+[4, 5, 6] --> [(1,0) (1,1) (1,2)]
+[7, 8, 9]     [(2,0) (2,1) (2,2)]
+```
+
+
+## Notes
 Every function is based around my struct **matrix** which contains width, height, and data. I did not make 
 a separate **vector** struct since a vector is just a one dimensional matrix.
 
