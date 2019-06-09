@@ -1,7 +1,15 @@
-#include "assert-custom.h"
-#include <execinfo.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "utils.h"
+
+
+bool exclusiveOr(bool a, bool b){
+    return (a || b) && (!(a && b));
+}
+
+double roundn(double val, unsigned int n){
+    assert(n > 0);
+    double x = pow(10, n);
+    return round(val * x) / x;
+}
 
 void assert(const int condition){
     if(!condition){
