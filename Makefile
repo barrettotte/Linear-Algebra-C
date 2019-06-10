@@ -6,7 +6,7 @@ build:
 	./test_matrix
 debug:
 	clear
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out.txt 
-	./dbg_matrix
+	make build
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out.txt ./test_matrix
 clean:
-	rm -rf test_matrix dbg_matrix valgrind-out.txt
+	rm -rf test_matrix valgrind-out.txt

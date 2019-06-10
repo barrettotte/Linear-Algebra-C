@@ -1,7 +1,6 @@
 #include <math.h>
 #include <stdio.h>
 #include "linear-algebra.h"
-#include "utils.h"
 
 void testCreate();
 void testCopy();
@@ -20,14 +19,18 @@ void testIsDiagonal();
 void testIsTriangular();
 void testIsSymmetric();
 
-void testDeterminant();
 void testTranspose();
 void testTrace();
 void testAddMatrices();
 void testMultiplyMatrices();
 void testScaleMatrix();
+void testSubMatrix();
+
+void testLuDecomposition();
+void testDeterminant();
 
 void testVectorOperations();
+
 
 int main(){
     testCreate();
@@ -47,12 +50,15 @@ int main(){
     testIsTriangular();
     testIsSymmetric();
 
-    testDeterminant();
     testTranspose();
     testTrace();
     testAddMatrices();
     testMultiplyMatrices();
     testScaleMatrix();
+    testSubMatrix();
+
+    //testLuDecomposition();
+    testDeterminant();
 
     testVectorOperations();
 
@@ -313,37 +319,6 @@ void testIsSymmetric(){
     deleteMatrix(n);
 }
 
-//TODO: update for nxn
-void testDeterminant(){
-    printf("\nTest determinant...\n");
-    
-    double data1[1] = { 10 };
-    matrix* m1 = newMatrix(data1, 1, 1);
-    assert(determinant(m1) == 10);
-    deleteMatrix(m1);
-
-    double data2[4] = { 4, 6, 3, 8 };
-    matrix* m2 = newMatrix(data2, 2, 2);
-    assert(determinant(m2) == 14);
-    deleteMatrix(m2);
-
-    double data3[9] = { 6, 1, 1, 4, -2, 5, 2, 8, 7 };
-    matrix* m3 = newMatrix(data3, 3, 3);
-    assert(determinant(m3) == -306);
-    deleteMatrix(m3);
-
-    /*
-    double data4[16] = { 
-      1, 2, 3, 4, 
-      5, 6, 7, 8,
-      9, 10, 11, 12,
-      13, 14, 15, 16
-    };
-    matrix* m4 = newMatrix(data4, 4, 4);
-    deleteMatrix(m4);
-    */
-}
-
 void testTranspose(){
     printf("\nTest transposeMatrix...\n");
     double data[6] = { 1, 2, 3, 4, 5, 6 };
@@ -409,6 +384,66 @@ void testScaleMatrix(){
     );
     deleteMatrix(scaled);
     deleteMatrix(m);
+}
+
+void testSubMatrix(){
+    printf("\nTest sub matrix...\n");
+    double data[9] = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    matrix* m = newMatrix(data, 3, 3);
+    matrix* sub = subMatrix(m, 2, 2);
+    assert(
+      getMatrixElement(sub,0,0) == 1 && getMatrixElement(sub,0,1) == 2 &&
+      getMatrixElement(sub,1,0) == 4 && getMatrixElement(sub,1,1) == 5
+    );
+    deleteMatrix(sub);
+    deleteMatrix(m);
+}
+
+void testLuDecomposition(){
+    printf("\nTest lu decomposition...\n");
+    double data[16] = { 11, 9, 24, 2, 1, 5, 2, 6, 3, 17, 18, 1, 2, 5, 7, 1 };
+    matrix* m = newMatrix(data, 4, 4);
+    matrix* l = NULL;
+    matrix* u = NULL;
+    matrix* p = NULL;
+    int sw = 0;
+    luDecomposition(m,&l,&u,&p,&sw);
+    printMatrix(l, false);
+    printf("\n");
+    printMatrix(u, false);
+    printf("\n");
+    printMatrix(p, false);
+
+    deleteMatrix(p);
+    deleteMatrix(u);
+    deleteMatrix(l);
+    deleteMatrix(m);
+}
+
+void testDeterminant(){
+    printf("\nTest determinant...\n");
+    
+    double data1[1] = { 10 };
+    matrix* m1 = newMatrix(data1, 1, 1);
+    assert(determinant(m1) == 10);
+    deleteMatrix(m1);
+
+    double data2[4] = { 4, 6, 3, 8 };
+    matrix* m2 = newMatrix(data2, 2, 2);
+    assert(determinant(m2) == 14);
+    deleteMatrix(m2);
+
+    double data3[9] = { 6, 1, 1, 4, -2, 5, 2, 8, 7 };
+    matrix* m3 = newMatrix(data3, 3, 3);
+    assert(determinant(m3) == -306);
+    deleteMatrix(m3);
+
+    
+    double data4[16] = { 11, 9, 24, 2, 1, 5, 2, 6, 3, 17, 18, 1, 2, 5, 7, 1 };
+    matrix* m4 = newMatrix(data4, 4, 4);
+    determinant(m4);
+
+    deleteMatrix(m4);
 }
 
 void testVectorOperations(){

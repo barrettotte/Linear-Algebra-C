@@ -45,11 +45,19 @@ valgrind --leak-check=full \
          ./dbg_matrix
 ```
 
+gdb debugging
+* compile normally (with -g)
+* ```gdb```
+* ```file test_matrix```
+* ```run```
+
 
 ## Resources
-* Elementary Linear Algebra textbook https://www.amazon.com/Elementary-Linear-Algebra-Howard-Anton/dp/0470458216
+* [Elementary Linear Algebra textbook](https://www.amazon.com/Elementary-Linear-Algebra-Howard-Anton/dp/0470458216)
 * Laplace expansion https://en.wikipedia.org/wiki/Laplace_expansion
 * Matrix decomposition https://en.wikipedia.org/wiki/Matrix_decomposition
   * Doolittle algorithm https://www.geeksforgeeks.org/doolittle-algorithm-lu-decomposition/
-  * LU decomposition https://en.wikipedia.org/wiki/LU_decomposition
+  * LU decomposition 
+    * https://en.wikipedia.org/wiki/LU_decomposition
+    * https://www.youtube.com/watch?v=yYxwlnilEJs
 * Matrix/Vector calculator https://www.symbolab.com/solver/matrix-vector-calculator

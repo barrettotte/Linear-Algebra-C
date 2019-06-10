@@ -1,6 +1,4 @@
-#include <math.h>
 #include "linear-algebra.h"
-#include "utils.h"
 
 
 bool assertVector(vector* v){

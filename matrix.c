@@ -1,5 +1,4 @@
 #include "linear-algebra.h"
-#include "utils.h"
 
 
 bool assertMatrix(matrix* m){
@@ -46,7 +45,11 @@ void fillMatrix(matrix** m, double n){
 matrix* identityMatrix(int n){
     matrix* m = zeroMatrix(n, n);
     for(int i = 0; i < m->rows; i++){
-        m->data[i * m->cols + i] = 1;
+        for(int j = 0; j < m->rows; j++){
+            if(i == j){
+                m->data[i * m->cols + j] = 1;
+            }
+        }
     }
     return m;
 }
@@ -110,7 +113,7 @@ void setRowVector(matrix* m, int i, vector* v){
 vector* getRowVector(matrix* m, int i){
     assert(assertMatrix(m) && i >= 0 && i < m->rows);
     double* row = (double*) malloc(sizeof(double) * m->cols);
-    for(int j = i; j < (i+1); j++){
+    for(int j = 0; j < m->cols; j++){
         row[j] = m->data[i * m->cols + j];
     }
     vector* v = newVector(row, m->cols);
@@ -190,10 +193,11 @@ void setAntiDiagonal(matrix*m, vector* v){
 
 double diagonalProduct(matrix*m){
     vector* diagonal = getMainDiagonal(m);
-    double product = 0.0;
+    double product = 1.0;
     for(int i = 0; i < diagonal->cols; i++){
         product *= diagonal->data[i];
     }
+    deleteVector(diagonal);
     return product;
 }
 
@@ -349,7 +353,21 @@ double determinant(matrix* m){
     if(isTriangularMatrix(m)){
         return diagonalProduct(m);
     }
-    //TODO:
+    matrix* l = NULL;
+    matrix* u = NULL;
+    matrix* p = NULL;
+    int sw;
+    luDecomposition(m,&l,&u,&p,&sw);
+
+    printf("\n");
+    printMatrix(p, false);
+    printf("\n%d\n", sw);
+    
+    double det = pow(-1,(double) sw) * determinant(l) * determinant(u);
+    printf("\n%f\n", det);
+    deleteMatrix(p);
+    deleteMatrix(u);
+    deleteMatrix(l);
     return 0.0;
 }
 
@@ -398,15 +416,15 @@ matrix* powMatrix(matrix* m, double k){
 }
 
 matrix* multiplyMatrices(matrix* m, matrix* n){
-    assert(assertMatrix(m) && assertMatrix(n) && m->cols == n->rows);
-    matrix* prod = zeroMatrix(m->rows, n->cols);
-    for(int j = 0; j < n->cols; j++){
-        for(int i = 0; i < m->rows; i++){
+    assert(assertMatrix(m) && assertMatrix(n) && m->cols == n->cols && m->rows == n->rows);
+    matrix* prod = zeroMatrix(m->cols, m->cols);
+    for(int j = 0; j < m->cols; j++){
+        for(int i = 0; i < m->cols; i++){
             double val = 0.0;
             for(int k = 0; k < m->cols; k++){
-                val += ((m->data[i * m->cols + k] * n->data[k * n->cols + j]));
+                val += ((m->data[i * m->cols + k] * n->data[k * m->cols + j]));
             }
-            prod->data[i * prod->cols + j] = val;
+            prod->data[i * m->cols + j] = val;
         }
     }
     return prod;
@@ -423,6 +441,98 @@ matrix* scaleMatrix(matrix* m, double s){
     return scaled;
 }
 
+matrix* subMatrix(matrix* m, double i, double j){
+    assert(assertMatrix(m) && i >= 0 && i < m->rows && j >= 0 && j < m->cols);
+    matrix* sm = nullMatrix(i,j);
+    for(int row = 0; row < sm->rows; row++){
+        for(int col = 0; col < sm->cols; col++){
+            sm->data[row * sm->cols + col] = m->data[row * m->cols + col];
+        }
+    }
+    return sm;
+}
+
+void luDecomposition(matrix* m, matrix** l, matrix** u, matrix** p, int* swaps){
+    assert(isSquareMatrix(m) && *l == NULL && *u == NULL && *p == NULL);
+    int n = m->cols;
+    *l = zeroMatrix(n, n);
+    *u = zeroMatrix(n, n);
+    *p = pivotMatrix(m, swaps);
+    matrix* m2 = multiplyMatrices(*p,m);
+    for(int j = 0; j < n; j++){
+        (*l)->data[j * n + j] = 1;
+        for(int i = 0; i < j+1; i++){
+            double sumU = 0;
+            for(int k = 0; k < i; k++){
+                sumU += ((*u)->data[k * n + j] * (*l)->data[i * n + k]);
+            }
+            (*u)->data[i * n + j] = m2->data[i * n + j] - sumU;
+        }
+        for(int i = j; i < n; i++){
+            double sumL = 0;
+            for(int k = 0; k < j; k++){
+                sumL += ((*u)->data[k * n + j] * (*l)->data[i * n + k]);
+            }
+            (*l)->data[i * n + j] = (m2->data[i * n + j] - sumL) / (*u)->data[j * n + j];
+        }
+    }
+    deleteMatrix(m2);
+    /*
+    for(int i = 0; i < m->cols; i++){
+        for(int k = i; k < m->cols; k++){
+            double sumU = 0;
+            for(int j = 0; j < i; j++){
+                sumU += ((*l)->data[i * m->cols + j]) * ((*u)->data[j * m->cols + k]);
+            }
+            (*u)->data[i * m->cols + k] = m->data[i * m->cols + k] - sumU;
+        }
+        for(int k = i; k < m->cols; k++){
+            if(i == k){
+                (*l)->data[i * m->cols + i] = 1;
+            } else{
+                double sumL = 0;
+                for(int j = 0; j < i; j++){
+                    sumL += (((*l)->data[k * m->cols + j]) * ((*u)->data[j * m->cols + i]));
+                }
+                (*l)->data[k * m->cols + i] = (m->data[k * m->cols + i] - sumL) / (*u)->data[i * m->cols + i];
+            }
+        }
+    }
+    */
+}
+
+matrix* inverseMatrix(matrix* m){
+    assert(isInvertible(m));
+    matrix* inv = nullMatrix(m->rows, m->cols);
+    return inv;
+}
+
+matrix* pivotMatrix(matrix* m, int* swaps){
+    assert(isSquareMatrix(m));
+    int n = m->cols;
+    matrix* pivot = identityMatrix(n);
+    for(int i = 0; i < n; i++){
+        double max = m->data[i * n + i];
+        int row = i;
+        for(int j = i; j < n; j++){
+            if(m->data[j * n + i] > max){
+                max = m->data[j * n + i];
+                row = j;
+            }
+        }
+        if(i != row){
+            vector* v = getRowVector(pivot, i);
+            vector* w = getRowVector(pivot, row);
+            setRowVector(pivot, i, w);
+            setRowVector(pivot, row, v);
+            deleteVector(w);
+            deleteVector(v);
+            swaps++;
+        }
+    }
+    return pivot;
+}
+
 void printMatrix(matrix* m, bool includeIndices){
     assertMatrix(m);
     for(int i = 0; i < m->rows; i++){
@@ -430,7 +540,7 @@ void printMatrix(matrix* m, bool includeIndices){
             if(includeIndices){
                 printf("[%d,%d] -> ", i, j);
             }
-            printf("%16.8f ", m->data[i * m->cols + j]);
+            printf("%8.2f ", m->data[i * m->cols + j]);
         }
         if(i < m->rows){
             printf("\n");

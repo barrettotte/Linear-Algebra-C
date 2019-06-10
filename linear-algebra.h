@@ -1,4 +1,8 @@
+#include <math.h>
 #include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include "utils.h"
 
 
 typedef struct{
@@ -307,3 +311,15 @@ matrix* shear2D(matrix *m, double k, int axis);
 
 // Return scalar as determinant of matrix m
 double determinant(matrix* m);
+
+
+// Decompose matrix m into matrices l (lower triangular), u (upper triangular), p (permutation)
+void luDecomposition(matrix* m, matrix** l, matrix** u, matrix** p, int* swaps);
+
+
+// Return new matrix as submatrix of matrix m[0:i,0:j]
+matrix* subMatrix(matrix* m, double i, double j);
+
+
+// Return new matrix as pivot matrix of matrix m
+matrix* pivotMatrix(matrix* m, int* swaps);
