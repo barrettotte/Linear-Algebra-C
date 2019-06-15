@@ -30,7 +30,7 @@ distinct type; even though they are practically identical, it adds a bit of read
 
 
 ## Functions
-* To do
+All functions are documented in ```linear-algebra.h```
 
 
 ## Debugging
