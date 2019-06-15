@@ -342,8 +342,7 @@ bool hasZeroCol(matrix* m){
 
 double determinant(matrix* m){
     assert(isSquareMatrix(m));
-    // use leibniz and laplace for smaller matrices
-    switch(m->rows){ 
+    switch(m->rows){  // use leibniz and laplace for smaller matrices
         case 1: return m->data[0];
         case 2: return (m->data[0] * m->data[3]) - (m->data[1] * m->data[2]);
         case 3: return (m->data[0]*((m->data[4]*m->data[8])-(m->data[5]*m->data[7]))) -
@@ -356,19 +355,12 @@ double determinant(matrix* m){
     matrix* l = NULL;
     matrix* u = NULL;
     matrix* p = NULL;
-    int sw;
-    luDecomposition(m,&l,&u,&p,&sw);
-
-    printf("\n");
-    printMatrix(p, false);
-    printf("\n%d\n", sw);
-    
-    double det = pow(-1,(double) sw) * determinant(l) * determinant(u);
-    printf("\n%f\n", det);
+    // det(permutation matrix) = (-1)^swaps
+    double det = pow(-1, luDecomposition(m,&l,&u,&p)-1) * determinant(l) * determinant(u);
     deleteMatrix(p);
     deleteMatrix(u);
     deleteMatrix(l);
-    return 0.0;
+    return det;
 }
 
 matrix* transposeMatrix(matrix* m){
@@ -417,8 +409,8 @@ matrix* powMatrix(matrix* m, double k){
 
 matrix* multiplyMatrices(matrix* m, matrix* n){
     assert(assertMatrix(m) && assertMatrix(n) && m->cols == n->cols && m->rows == n->rows);
-    matrix* prod = zeroMatrix(m->cols, m->cols);
-    for(int j = 0; j < m->cols; j++){
+    matrix* prod = nullMatrix(m->rows, m->cols);
+    for(int j = 0; j < m->rows; j++){
         for(int i = 0; i < m->cols; i++){
             double val = 0.0;
             for(int k = 0; k < m->cols; k++){
@@ -441,23 +433,82 @@ matrix* scaleMatrix(matrix* m, double s){
     return scaled;
 }
 
-matrix* subMatrix(matrix* m, double i, double j){
+matrix* subMatrix(matrix* m, int i, int j){
     assert(assertMatrix(m) && i >= 0 && i < m->rows && j >= 0 && j < m->cols);
-    matrix* sm = nullMatrix(i,j);
-    for(int row = 0; row < sm->rows; row++){
-        for(int col = 0; col < sm->cols; col++){
-            sm->data[row * sm->cols + col] = m->data[row * m->cols + col];
+    matrix* sm = nullMatrix(m->rows-1,m->cols-1);
+    int idx = 0;
+    for(int row = 0; row < m->rows; row++){
+        for(int col = 0; col < m->cols; col++){
+            if(row != i && col != j){
+                sm->data[idx++] = m->data[row * m->cols + col];
+            }
         }
     }
     return sm;
 }
 
-void luDecomposition(matrix* m, matrix** l, matrix** u, matrix** p, int* swaps){
+double elementMinor(matrix* m, int i, int j){
+    matrix* sm = subMatrix(m,i,j);
+    double minor = determinant(sm);
+    deleteMatrix(sm);
+    return minor;
+}
+
+matrix* matrixMinor(matrix* m){
+    assertMatrix(m);
+    matrix* mm = nullMatrix(m->rows, m->cols);
+    for(int i = 0; i < mm->rows; i++){
+        for(int j = 0; j < mm->cols; j++){
+            mm->data[i * mm->cols + j] = elementMinor(m,i,j);
+        }
+    }
+    return mm;
+}
+
+double elementCofactor(matrix* m, int i, int j){
+    return pow(-1, (i+1)+(j+1)) * elementMinor(m, i, j);
+}
+
+matrix* matrixCofactor(matrix* m){
+    assertMatrix(m);
+    matrix* cfm = nullMatrix(m->rows, m->cols);
+    for(int i = 0; i < cfm->rows; i++){
+        for(int j = 0; j < cfm->cols; j++){
+            cfm->data[i * cfm->cols + j] = elementCofactor(m,i,j);
+        }
+    }
+    return cfm;
+}
+
+matrix* signMatrix(int rows, int cols){
+    assert(rows > 0 && cols > 0);
+    matrix* sm = nullMatrix(rows, cols);
+    fillMatrix(&sm, 1);
+    for(int i = 0; i < sm->rows; i++){
+        for(int j = 0; j < sm->cols; j++){
+            sm->data[i * sm->cols + j] = (((i * sm->cols + j)+1) % 2) ? 1 : -1;
+        }
+    }
+    return sm;
+}
+
+matrix* adjugateMatrix(matrix* m){
+    assertMatrix(m);
+    matrix* mm = matrixMinor(m);
+    matrix* sign = signMatrix(m->rows, m->cols);
+    matrix* adj = multiplyMatrices(mm, sign);
+    deleteMatrix(sign);
+    deleteMatrix(mm);
+    return adj;
+}
+
+int luDecomposition(matrix* m, matrix** l, matrix** u, matrix** p){
     assert(isSquareMatrix(m) && *l == NULL && *u == NULL && *p == NULL);
     int n = m->cols;
+    int swaps = 0;
     *l = zeroMatrix(n, n);
     *u = zeroMatrix(n, n);
-    *p = pivotMatrix(m, swaps);
+    *p = pivotMatrix(m, &swaps);
     matrix* m2 = multiplyMatrices(*p,m);
     for(int j = 0; j < n; j++){
         (*l)->data[j * n + j] = 1;
@@ -477,33 +528,14 @@ void luDecomposition(matrix* m, matrix** l, matrix** u, matrix** p, int* swaps){
         }
     }
     deleteMatrix(m2);
-    /*
-    for(int i = 0; i < m->cols; i++){
-        for(int k = i; k < m->cols; k++){
-            double sumU = 0;
-            for(int j = 0; j < i; j++){
-                sumU += ((*l)->data[i * m->cols + j]) * ((*u)->data[j * m->cols + k]);
-            }
-            (*u)->data[i * m->cols + k] = m->data[i * m->cols + k] - sumU;
-        }
-        for(int k = i; k < m->cols; k++){
-            if(i == k){
-                (*l)->data[i * m->cols + i] = 1;
-            } else{
-                double sumL = 0;
-                for(int j = 0; j < i; j++){
-                    sumL += (((*l)->data[k * m->cols + j]) * ((*u)->data[j * m->cols + i]));
-                }
-                (*l)->data[k * m->cols + i] = (m->data[k * m->cols + i] - sumL) / (*u)->data[i * m->cols + i];
-            }
-        }
-    }
-    */
+    return swaps;
 }
 
 matrix* inverseMatrix(matrix* m){
     assert(isInvertible(m));
-    matrix* inv = nullMatrix(m->rows, m->cols);
+    matrix* adj = adjugateMatrix(m);
+    matrix* inv = scaleMatrix(adj,(1.0/determinant(m)));
+    deleteMatrix(adj);
     return inv;
 }
 

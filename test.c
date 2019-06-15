@@ -25,9 +25,8 @@ void testAddMatrices();
 void testMultiplyMatrices();
 void testScaleMatrix();
 void testSubMatrix();
-
-void testLuDecomposition();
 void testDeterminant();
+void testInverse();
 
 void testVectorOperations();
 
@@ -56,9 +55,8 @@ int main(){
     testMultiplyMatrices();
     testScaleMatrix();
     testSubMatrix();
-
-    //testLuDecomposition();
     testDeterminant();
+    testInverse();
 
     testVectorOperations();
 
@@ -399,27 +397,6 @@ void testSubMatrix(){
     deleteMatrix(m);
 }
 
-void testLuDecomposition(){
-    printf("\nTest lu decomposition...\n");
-    double data[16] = { 11, 9, 24, 2, 1, 5, 2, 6, 3, 17, 18, 1, 2, 5, 7, 1 };
-    matrix* m = newMatrix(data, 4, 4);
-    matrix* l = NULL;
-    matrix* u = NULL;
-    matrix* p = NULL;
-    int sw = 0;
-    luDecomposition(m,&l,&u,&p,&sw);
-    printMatrix(l, false);
-    printf("\n");
-    printMatrix(u, false);
-    printf("\n");
-    printMatrix(p, false);
-
-    deleteMatrix(p);
-    deleteMatrix(u);
-    deleteMatrix(l);
-    deleteMatrix(m);
-}
-
 void testDeterminant(){
     printf("\nTest determinant...\n");
     
@@ -438,12 +415,25 @@ void testDeterminant(){
     assert(determinant(m3) == -306);
     deleteMatrix(m3);
 
-    
     double data4[16] = { 11, 9, 24, 2, 1, 5, 2, 6, 3, 17, 18, 1, 2, 5, 7, 1 };
     matrix* m4 = newMatrix(data4, 4, 4);
-    determinant(m4);
-
+    double det = determinant(m4);
+    assert(284 == roundn(det, 1));
     deleteMatrix(m4);
+}
+
+void testInverse(){
+    printf("\nTest inverse matrix...\n");
+
+    double data[9] = { 3, 0, 2, 2, 0, -2, 0, 1, 1 };
+    matrix* m = newMatrix(data, 3, 3);
+    matrix* inv = inverseMatrix(m);
+
+    printf("\nInv(m)\n");
+    printMatrix(inv, false);
+
+    deleteMatrix(inv);
+    deleteMatrix(m);
 }
 
 void testVectorOperations(){

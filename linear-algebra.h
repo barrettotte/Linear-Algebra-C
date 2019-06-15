@@ -314,11 +314,39 @@ double determinant(matrix* m);
 
 
 // Decompose matrix m into matrices l (lower triangular), u (upper triangular), p (permutation)
-void luDecomposition(matrix* m, matrix** l, matrix** u, matrix** p, int* swaps);
+int luDecomposition(matrix* m, matrix** l, matrix** u, matrix** p);
 
 
-// Return new matrix as submatrix of matrix m[0:i,0:j]
-matrix* subMatrix(matrix* m, double i, double j);
+// Return new matrix as submatrix of matrix m, excluding row i and col i
+matrix* subMatrix(matrix* m, int i, int j);
+
+
+// Return scalar as minor of matrix m at row i and column j
+double elementMinor(matrix* m, int i, int j);
+
+
+// Return new matrix as matrix of minors of matrix m
+matrix* matrixMinor(matrix* m); 
+
+
+// Return scalar as cofactor of matrix m at row i and column j
+double elementCofactor(matrix* m, int i, int j);
+
+
+// Return new matrix as cofactor matrix of matrix m
+matrix* matrixCofactor(matrix* m);
+
+
+// Return new matrix with elements alternating sign + -
+matrix* signMatrix(int rows, int cols);
+
+
+// Return new matrix as adjugate matrix of matrix m
+matrix* adjugateMatrix(matrix* m);
+
+
+// Return new matrix as inversion of matrix m
+matrix* inverseMatrix(matrix* m);
 
 
 // Return new matrix as pivot matrix of matrix m
